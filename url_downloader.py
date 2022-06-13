@@ -22,8 +22,8 @@ class UrlDownloader:
 		try:
 			if not os.path.exists(self.file_path):
 				os.makedirs(self.file_path)
-			if not os.path.exists(self.zip_file_path):
-				os.makedirs(self.zip_file_path)
+			if not os.path.exists(self.zip_dir_path):
+				os.makedirs(self.zip_dir_path)
 		except Exception as e:
 			print("Exception in creating dir ", e)
 

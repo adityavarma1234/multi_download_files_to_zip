@@ -7,6 +7,7 @@ from status_values import StatusValues
 
 
 app = Flask(__name__)
+global_status_hash = Manager().dict()
 
 def process_url_download(url_downloader, global_status_hash):
 	url_downloader.download()
