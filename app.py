@@ -10,10 +10,10 @@ app = Flask(__name__)
 global_status_hash = Manager().dict()
 
 def process_url_download(url_downloader, global_status_hash):
-	url_downloader.download()
-	url_downloader.zip_files()
-	global_status_hash[url_downloader.uuid] = StatusValues.Completed.name
-	print("updated_global_status hash ", global_status_hash)
+	if(url_downloader.download(global_status_hash)):
+		if(url_downloader.zip_files()):
+			global_status_hash[url_downloader.uuid] = StatusValues.Completed.name
+			print("updated_global_status hash ", global_status_hash)
 
 @app.route('/success/<value>')
 def success(value):
