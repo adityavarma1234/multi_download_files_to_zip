@@ -9,6 +9,7 @@ from io import BytesIO
 
 from zip_helper import ZipHelper
 from status_values import StatusValues
+from url_filter import UrlFilter
 
 class UrlDownloader:
 	def __init__(self, urls):
@@ -33,7 +34,7 @@ class UrlDownloader:
 	def fetch_pool(self):
 		return ThreadPool(cpu_count() - 1)
 
-	def download_url(self, url):
+	def download_url(self, url, global_status_hash):
 		print("file_path: ", self.file_path)
 		print("downloading: ", url)
 		# TODO: Add retry logic for network errors
@@ -48,19 +49,38 @@ class UrlDownloader:
 				val = 1
 		except Exception as e:
 			print(e)
+			self.global_status_hash[self.uuid] = "ErrorCode:102"
 		return url
 
-	def download(self):
+
+
+	def download(self, global_status_hash):
+		len_urls = len(self.urls)
+		filtered_urls = UrlFilter(urls).filter()
+		filtered_urls_length = len(filtered_urls)
+
+		if(len_urls != filtered_urls_length):
+			global_status_hash[self.uuid] = "ErrorCode:100"
+			return False
+
+
 		pool = self.fetch_pool()
-		# TODO: check if url is downloadable or not: https://gist.github.com/Bharat-B/796ea2c1b17fe3d63ad39258a84b384d
+		## This can be avoided by using a db and updating the corresponding error code
+		self.global_status_hash = global_status_hash
 		results = pool.imap_unordered(self.download_url, self.urls)
 		for r in results:
 			print(r)
+		return True
 
-	def zip_files(self):
+	def zip_files(self, global_status_hash):
 		zip_file_path = os.path.join(self.zip_dir_path, self.uuid)
-		ZipHelper(self.file_path, zip_file_path).zip()
-		print('zip of files completed')
+		try:
+			ZipHelper(self.file_path, zip_file_path).zip()
+			print('zip of files completed')
+		except Exception as e:
+			global_status_hash[self.uuid] = "ErrorCode:101"
+			return False
+		return True
 
 urls = [
 'https://www.northwestknowledge.net/metdata/data/pr_1979.nc',

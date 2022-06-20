@@ -21,3 +21,9 @@ Testing steps
 4. If it is successful you will be redirected to `http://localhost:5000/success/<uuid>` page
 5. Go to `http://localhost:5000/api/archive/status/<uuid>` to check the current status
 6. Once the status is completed go to `localhost:5000/archive/get/<uuid.zip>` to fetch the file
+
+Error Codes
+
+1. 100 -> Invalid urls provided
+2. 101 -> Error in zipping files
+3. 102 -> Error in downloading files
